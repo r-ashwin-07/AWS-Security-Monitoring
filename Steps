@@ -1,0 +1,73 @@
+AWS Security Monitoring & Alerting
+
+Project Goal : Track user activities
+               Detect suspicious behavior
+               Get alerts automatically
+
+Services used : CloudTrail, S3, CloudWatch, SNS, IAM
+
+SERVICE 1: Cloud Trail
+
+Step 1: CloudTrail console
+        AWS Console → CloudTrail
+
+Step 2: Create trail
+        Click Create trail
+        Trail details
+         Trail name: security-monitoring-trail
+        Storage location: Create new S3 bucket
+        Log file SSE encryption: Enabled
+        Events: Management events → All
+         Read + Write → Enabled
+        Click Create trail
+
+SERVICE 2: CloudWatch Logs
+
+Step 1: CloudTrail → CloudWatch integration
+        CloudTrail console → Your trail → Edit
+        Enable:Send to CloudWatch Logs
+        Create new Log Group
+        Name: /aws/cloudtrail/security
+
+SERVICE 3: CloudWatch Metric Filter
+
+Step 1: CloudWatch → Log groups
+        Open /aws/cloudtrail/security
+Step 2: Create Metric Filter
+        Click Create metric filter
+        Filter pattern: { ($.eventName = "DeleteUser") }
+Step 3: Metric details
+        Metric namespace: SecurityMonitoring
+        Metric name: IAMUserDeletion
+        Metric value: 1 
+        Create filter
+
+SERVICE 4: SNS
+
+Step 1: SNS console
+        AWS Console → SNS
+Step 2: Create topic
+        Topic name: security-alerts
+Step 3: Create subscription
+        Protocol: Email
+        Endpoint: your email ID
+
+SERVICE 5: CloudWatch Alarm
+
+Step 1: CloudWatch → Alarms
+        Click Create alarm
+Step 2: Select metric
+        Namespace: SecurityMonitoring
+        Metric: IAMUserDeletion
+Step 3: Condition
+        Threshold: Whenever metric ≥ 1
+Step 4: Notification
+        SNS topic select:
+        security-alerts
+
+FINAL TEST  : IAM → Users
+              Create test IAM user
+              Delete that user 
+
+FINAL OUTPUT : Email inbox : ALARM: IAM User Deletion Detected
+
